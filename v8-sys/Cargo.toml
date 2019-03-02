@@ -13,8 +13,8 @@ version = "0.14.7"
 
 [build-dependencies]
 bindgen = "0.22.0"
-gcc = "0.3.38"
 pkg-config = "0.3.8"
+cc = "1.0.30"
 
 [build-dependencies.clang]
 features = ["runtime"]
