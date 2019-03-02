@@ -66,8 +66,9 @@ fn read_api() -> v8_api::Api {
         extra_includes.push(path::PathBuf::from(dir_str).join("include"));
     }
 
-    let clang = clang_sys::support::Clang::find(None).expect("No clang found, is it installed?");
-    extra_includes.extend_from_slice(&clang.c_search_paths);
+    let clang =
+        clang_sys::support::Clang::find(None, &[]).expect("No clang found, is it installed?");
+    extra_includes.extend_from_slice(&clang.c_search_paths.unwrap());
 
     let trampoline_path = path::Path::new("src/v8-trampoline.h");
 
@@ -188,7 +189,7 @@ fn gen_bindings(out_dir_path: &path::Path, bindings_path: &path::Path) {
     let mut bindings = bindgen::builder()
         .header("src/v8-glue.h")
         .emit_builtins()
-        .no_unstable_rust()
+        .rust_target(bindgen::LATEST_STABLE_RUST)
         //bindings.remove_prefix("v8_");
         .clang_arg("-Isrc")
         .clang_arg(format!("-I{}", out_dir_path.to_string_lossy()));

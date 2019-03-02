@@ -9,8 +9,8 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       # Modern compilers
-      - gcc-6
-      - g++-6
+      - gcc-7
+      - g++-7
       # The V8 version that we want to bind
       - libv8-5.4-dev
       - libicu-dev
@@ -22,33 +22,17 @@ addons:
 
 matrix:
   include:
-    - env: FEATURES="" CC=gcc-6 CXX=g++-6
+    - env: FEATURES="" CC=gcc-7 CXX=g++-7
       rust: stable
       os: linux
-    - env: FEATURES="--features=shared" CC=gcc-6 CXX=g++-6
-      rust: stable
-      os: linux
-    - env: FEATURES="--features=shared"
-      rust: stable
-      os: osx
-      osx_image: xcode8
-    - env: FEATURES="" CC=gcc-6 CXX=g++-6
-      rust: nightly
-      os: linux
-    - env: FEATURES="--features=shared" CC=gcc-6 CXX=g++-6
+    - env: FEATURES="" CC=gcc-7 CXX=g++-7
       rust: nightly
       os: linux
   allow_failures:
     - rust: nightly
 
 before_install:
-  - |
-      if [ "$TRAVIS_OS_NAME" = osx ]
-      then
-        brew tap dflemstr/tools
-        brew update
-        brew install -v dflemstr/tools/v8
-      fi
+  - sudo apt-get install libv8-6.6-dev -y
 
 before_script:
   - |
@@ -63,21 +47,4 @@ script:
 
 after_success:
   - |
-    if [ -z "$FEATURES" ]; then travis-cargo --only stable doc; travis-cargo --only stable doc-upload; fi
-    wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-    tar xzf master.tar.gz &&
-    cd kcov-master &&
-    mkdir build &&
-    cd build &&
-    cmake .. &&
-    make &&
-    sudo make install &&
-    cd ../.. &&
-    rm -rf kcov-master &&
-    RUSTFLAGS='-C link-dead-code' cargo test $FEATURES --no-run &&
-    for file in target/debug/v8-*
-    do
-        kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov" "$file"
-    done &&
-    bash <(curl -s https://codecov.io/bash) &&
-    echo "Uploaded code coverage"
+    echo "SUCCESS"

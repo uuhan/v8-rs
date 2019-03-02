@@ -13,5 +13,5 @@ env_logger = "0.4.0"
 log = "0.3.6"
 
 [dependencies.clang]
-features = ["clang_3_5", "runtime"]
-version = "0.15.0"
+features = ["clang_6_0", "runtime"]
+version = "0.21.0"
